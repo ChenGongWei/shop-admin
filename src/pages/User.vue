@@ -1,0 +1,76 @@
+<template>
+  <!-- 管理员管理 -->
+  <div class="wrap">
+    <!-- 添加按钮 -->
+    <el-button type="primary">添加</el-button>
+    <!-- 表格 -->
+    <el-table :data="tableData" border style="width: 800px" row-key="id">
+      <el-table-column prop="uid" label="用户编号" width="180"></el-table-column>
+
+      <el-table-column prop="role" label="角色" width="180"></el-table-column>
+
+      <el-table-column prop="uname" label="用户名"></el-table-column>
+
+      <el-table-column prop="types" label="状态">
+        <template slot-scope="scope">
+          <el-button :type="scope.row.types[0]">{{scope.row.types[1]}}</el-button>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" width="180">
+        <template slot-scope="scope">
+          <el-button size="mini" @click="handleEdit(scope.$index, scope.row.id)">编辑</el-button>
+          <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row.id)">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      tableData: [
+        {
+          id: 1,
+          uid: "asdfafae-123fqw-2efqw-fq-23d23d",
+          role: "系统管理员",
+          uname: "admin",
+          types: ["success", "启用"],
+        },
+        {
+          id: 2,
+          uid: "asdfafae-123fqw-2efqw-fq-23d23d",
+          role: "客服专员",
+          uname: "jack",
+          types: ["success", "启用"],
+        },
+        {
+          id: 3,
+          uid: "asdfafae-123fqw-2efqw-fq-23d23d",
+          role: "客服专员",
+          uname: "tom",
+          types: ["success", "启用"],
+        },
+      ],
+    };
+  },
+  methods: {
+    handleEdit(index, row) {
+      console.log(index, row);
+    },
+    handleDelete(index, row) {
+      console.log(index, row);
+    },
+  },
+};
+</script>
+
+<style scoped>
+.wrap {
+  margin-top: 20px;
+}
+.is-plain {
+  font-size: 12px;
+}
+</style>
