@@ -4,8 +4,8 @@
     <div class="form">
       <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" class="demo-ruleForm">
         <h2>登录</h2>
-        <el-form-item prop="user">
-          <el-input v-model.number="ruleForm.user" placeholder="请输入用户名"></el-input>
+        <el-form-item prop="username">
+          <el-input v-model="ruleForm.username" placeholder="请输入用户名"></el-input>
         </el-form-item>
         <el-form-item prop="password">
           <el-input
@@ -17,7 +17,7 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" class="submit" @click="submitForm('ruleForm')">提交</el-button>
+          <el-button type="primary" class="submit" @click="submitForm('ruleForm')">登录</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -29,17 +29,17 @@ export default {
   data() {
     return {
       ruleForm: {
-        user: "",
+        username: "",
         password: "",
       },
       rules: {
-        user: [
+        username: [
           { required: true, message: "请输入用户名", trigger: "blur" },
-          { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" },
+          { min: 3, max: 8, message: "长度在 3 到 8 个字符", trigger: "blur" },
         ],
         password: [
           { required: true, message: "请输入密码", trigger: "blur" },
-          { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" },
+          { min: 3, max: 8, message: "长度在 3 到 8 个字符", trigger: "blur" },
         ],
       },
     };
@@ -50,7 +50,24 @@ export default {
       console.log(this.$refs[formName].$el[1].value);
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.$router.replace("/index");
+          // this.$router.replace("/index");
+
+          // params1：提交路径
+          // params2：参数
+          this.axios
+            .post("/api/userlogin", this.ruleForm)
+            .then((res) => {
+              console.log(res);
+              if (res.data.code == 200) {
+                sessionStorage.setItem("list", JSON.stringify(res.data.list));
+                this.$router.replace("/index");
+              } else {
+                this.$message("请输入正确的用户名和密码");
+              }
+            })
+            .catch((err) => {
+              this.$message(err.msg);
+            });
         }
       });
       // this.$router.replace("/index");

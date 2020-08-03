@@ -13,7 +13,7 @@ const Specs = () => import('@/pages/Specs');
 const Goods = () => import('@/pages/Goods');
 const Member = () => import('@/pages/Member');
 const Banner = () => import('@/pages/Banner');
-const SecKill = () => import('@/pages/SecKill');
+const Seckill = () => import('@/pages/Seckill');
 // const SideBar = () => import('@/components/common/SideBar');
 
 Vue.use(Router)
@@ -56,7 +56,7 @@ export default new Router({
         component: Banner
       }, {
         path: 'seckill', // 秒杀活动
-        component: SecKill
+        component: Seckill
       }, {
         path: '',
         redirect: '/index'

@@ -1,77 +1,50 @@
 <template>
   <!-- 侧边导航 -->
   <el-menu
-    default-active="2-1"
+    default-active="0"
     class="el-menu-vertical-demo"
     @open="handleOpen"
     @close="handleClose"
     background-color="#242c34"
     text-color="#fff"
     active-text-color="#ffd04b"
+    :unique-opened="true"
   >
     <el-menu-item>后台管理系统</el-menu-item>
 
     <!-- 首页 -->
-    <el-menu-item index="1">
+    <el-menu-item index="0">
       <i class="el-icon-s-home"></i>
       <!-- <span slot="title"> -->
-      <router-link to="/" tag="span" slot="title">首页</router-link>
+      <router-link to="/index" tag="span" slot="title">首页</router-link>
       <!-- </span> -->
     </el-menu-item>
 
-    <el-submenu v-for="menu in tablist" :index="menu.id" :key="menu.id">
+    <!-- <el-submenu v-for="menu in tablist" :index="menu.id" :key="menu.id">
       <template slot="title">
         <i :class="menu.icon"></i>
         <span slot="title">{{ menu.text }}</span>
       </template>
+      
       <el-menu-item-group>
         <el-menu-item v-for="item in menu.children" :index="item.id" :key="item.id">
           <router-link :to="item.url" tag="span">{{ item.text }}</router-link>
         </el-menu-item>
       </el-menu-item-group>
+    </el-submenu>-->
+
+    <el-submenu v-for="menu in menus" :index="menu.id+''" :key="menu.id">
+      <template slot="title">
+        <i :class="menu.icon"></i>
+        <span slot="title">{{ menu.title }}</span>
+      </template>
+      <!-- 二级菜单 -->
+      <el-menu-item-group>
+        <el-menu-item v-for="item in menu.children" :index="item.id+''" :key="item.id">
+          <router-link :to="item.url" tag="span">{{ item.title }}</router-link>
+        </el-menu-item>
+      </el-menu-item-group>
     </el-submenu>
-
-    <!-- 系统设置 -->
-    <!-- <el-submenu index="2">
-      <template slot="title">
-        <i class="el-icon-setting"></i>
-        <span slot="title">系统设置</span>
-      </template>
-      <el-menu-item-group>
-        <el-menu-item index="2-1">菜单管理</el-menu-item>
-        <el-menu-item index="2-2">角色管理</el-menu-item>
-        <el-menu-item index="2-3">管理员管理</el-menu-item>
-      </el-menu-item-group>
-    </el-submenu>-->
-
-    <!-- 产品管理 -->
-    <!-- <el-submenu index="3">
-      <template slot="title">
-        <i class="el-icon-s-goods"></i>
-        <span slot="title">产品管理</span>
-      </template>
-      <el-menu-item-group>
-        <el-menu-item index="3-1">菜单管理</el-menu-item>
-        <el-menu-item index="3-2">角色管理</el-menu-item>
-        <el-menu-item index="3-3">管理员管理</el-menu-item>
-      </el-menu-item-group>
-    </el-submenu>-->
-
-    <!-- 商城管理 -->
-    <!-- <el-submenu index="3">
-      <template slot="title">
-        <i class="el-icon-s-goods"></i>
-        <span slot="title">商城管理</span>
-      </template>
-      <el-menu-item-group>
-        <el-menu-item index="3-1">商品分类</el-menu-item>
-        <el-menu-item index="3-2">商品规格</el-menu-item>
-        <el-menu-item index="3-3">商品管理</el-menu-item>
-        <el-menu-item index="3-4">会员管理</el-menu-item>
-        <el-menu-item index="3-5">轮播图管理</el-menu-item>
-        <el-menu-item index="3-6">秒杀活动</el-menu-item>
-      </el-menu-item-group>
-    </el-submenu>-->
   </el-menu>
 </template>
 
@@ -140,6 +113,7 @@ export default {
           ],
         },
       ],
+      menus: [],
     };
   },
   methods: {
@@ -149,6 +123,10 @@ export default {
     handleClose(key, keyPath) {
       // console.log(key, keyPath);
     },
+  },
+  mounted() {
+    this.menus = JSON.parse(sessionStorage.getItem("list")).menus;
+    console.log(this.menus);
   },
 };
 </script>

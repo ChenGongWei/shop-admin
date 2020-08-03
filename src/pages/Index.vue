@@ -45,11 +45,93 @@
         </ul>
       </div>
     </div>
+    <!-- <el-row :gutter="20">
+      <el-col :span="12">
+        <div class="grid-content bg-purple">12</div>
+      </el-col>
+      <el-col :span="12">
+        <div class="grid-content bg-purple-light">12</div>
+      </el-col>
+    </el-row>-->
+    <el-row style="margin-left:20px">
+      <el-col :span="24">
+        <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+        <div id="main"></div>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
 <script>
-export default {};
+import echarts from "echarts";
+
+export default {
+  data() {
+    return {
+      datalist: [
+        {
+          name: "近一周订单数量",
+          type: "line",
+          data: [300, 400, 250, 440, 600, 570, 660],
+          // areaStyle: {},
+        },
+        // {
+        //   name: "一周banan销量",
+        //   type: "line",
+        //   data: [600, 400, 200, 0, 200, 400, 600],
+        //   areaStyle: {},
+        // },
+      ],
+    };
+  },
+  methods: {
+    drawLine(id) {
+      // 基于准备好的dom，初始化echarts实例
+      this.myChart = echarts.init(document.getElementById(id));
+      // 使用指定的配置项和数据显示图表。
+      this.myChart.setOption({
+        // 图表标题
+        title: {
+          // text: "销量",
+        },
+        toolbox: {
+          feature: {
+            saveAsImage: {},
+          },
+        },
+        // 提示信息
+        tooltip: {
+          // 提示信息触发时机
+          trigger: "axis",
+        },
+        // 图例 多组数据时需要
+        legend: {
+          data: ["近一周订单数量"],
+        },
+        // x轴设置 分类
+        xAxis: {
+          // 分类
+          type: "category",
+          // 刻度
+          data: ["周一", "周二", "周三", "周四", "周五", "周六", "周日"],
+          // x轴 两端留白
+          boundaryGap: false,
+        },
+        // y轴设置 显示数据
+        yAxis: {
+          type: "value",
+        },
+        // 输入数据，每一个对象就是一组数据
+        series: this.datalist,
+        // 颜色
+        // color: ["#f00", "#e9eef3"],
+      });
+    },
+  },
+  mounted() {
+    this.drawLine("main");
+  },
+};
 </script>
 
 <style scoped>
@@ -87,5 +169,18 @@ export default {};
 }
 .num {
   color: #e06969;
+}
+
+.bg-purple {
+  background: #d3dce6;
+}
+.bg-purple-light {
+  background: #e5e9f2;
+}
+
+#main {
+  width: 700px;
+  height: 400px;
+  /* border: 1px solid #ccc; */
 }
 </style>

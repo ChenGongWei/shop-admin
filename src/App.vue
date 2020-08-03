@@ -8,7 +8,7 @@
 export default {
   name: "App",
   mounted() {
-    this.axios.get("/api/getbanner").then((res) => console.log(res));
+    // this.axios.get("/api/getbanner").then((res) => console.log(res));
   },
 };
 </script>
