@@ -10,6 +10,9 @@ Vue.use(ElementUI);
 
 import axios from 'axios';
 Vue.prototype.axios = axios;
+import { get, post } from './utils/http';
+Vue.prototype.http = { get, post };
+// console.log(Vue.prototype.http);
 
 Vue.config.productionTip = false
 

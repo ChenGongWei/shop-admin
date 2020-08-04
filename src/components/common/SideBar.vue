@@ -1,7 +1,7 @@
 <template>
   <!-- 侧边导航 -->
   <el-menu
-    default-active="0"
+    :default-active="$route.path"
     class="el-menu-vertical-demo"
     @open="handleOpen"
     @close="handleClose"
@@ -9,15 +9,15 @@
     text-color="#fff"
     active-text-color="#ffd04b"
     :unique-opened="true"
+    :router="true"
   >
     <el-menu-item>后台管理系统</el-menu-item>
 
     <!-- 首页 -->
-    <el-menu-item index="0">
+    <el-menu-item index="/index">
       <i class="el-icon-s-home"></i>
-      <!-- <span slot="title"> -->
-      <router-link to="/index" tag="span" slot="title">首页</router-link>
-      <!-- </span> -->
+      <span slot="title">首页</span>
+      <!-- <router-link to="/index" tag="span" slot="title">首页</router-link> -->
     </el-menu-item>
 
     <!-- <el-submenu v-for="menu in tablist" :index="menu.id" :key="menu.id">
@@ -33,15 +33,16 @@
       </el-menu-item-group>
     </el-submenu>-->
 
-    <el-submenu v-for="menu in menus" :index="menu.id+''" :key="menu.id">
+    <el-submenu v-for="menu in menus" :key="menu.id" :index="menu.id+''">
       <template slot="title">
         <i :class="menu.icon"></i>
         <span slot="title">{{ menu.title }}</span>
       </template>
       <!-- 二级菜单 -->
       <el-menu-item-group>
-        <el-menu-item v-for="item in menu.children" :index="item.id+''" :key="item.id">
-          <router-link :to="item.url" tag="span">{{ item.title }}</router-link>
+        <el-menu-item v-for="item in menu.children" :index="item.url" :key="item.id">
+          <!-- <router-link :to="item.url" tag="div">{{ item.title }}</router-link> -->
+          <span>{{ item.title }}</span>
         </el-menu-item>
       </el-menu-item-group>
     </el-submenu>
@@ -126,7 +127,7 @@ export default {
   },
   mounted() {
     this.menus = JSON.parse(sessionStorage.getItem("list")).menus;
-    console.log(this.menus);
+    // console.log(this.menus);
   },
 };
 </script>

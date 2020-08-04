@@ -5,7 +5,7 @@
     <el-button type="primary">添加</el-button>
     <!-- 表格 -->
     <el-table :data="tableData" border style="width: 1000px" row-key="id">
-      <el-table-column prop="first" label="一级分类" width="180"></el-table-column>
+      <el-table-column prop="first" label="一级分类" width="150"></el-table-column>
 
       <el-table-column prop="second" label="二级分类"></el-table-column>
 

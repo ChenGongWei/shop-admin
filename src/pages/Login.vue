@@ -54,12 +54,13 @@ export default {
 
           // params1：提交路径
           // params2：参数
-          this.axios
+          this.http
             .post("/api/userlogin", this.ruleForm)
             .then((res) => {
               console.log(res);
-              if (res.data.code == 200) {
-                sessionStorage.setItem("list", JSON.stringify(res.data.list));
+              if (res.code == 200) {
+                sessionStorage.setItem("list", JSON.stringify(res.list));
+                sessionStorage.setItem("token", res.token);
                 this.$router.replace("/index");
               } else {
                 this.$message("请输入正确的用户名和密码");

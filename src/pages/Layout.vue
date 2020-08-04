@@ -22,7 +22,7 @@
       <!-- 内容容器 -->
       <el-main>
         <!-- 面包屑导航 -->
-        <el-breadcrumb separator="/" v-show="navseen">
+        <el-breadcrumb separator="/" v-show="navSeen">
           <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
           <el-breadcrumb-item>{{title}}</el-breadcrumb-item>
         </el-breadcrumb>
@@ -42,7 +42,6 @@ export default {
   },
   data() {
     return {
-      navseen: false,
       titleList: {
         "/menu": "菜单管理",
         "/role": "角色管理",
@@ -57,13 +56,13 @@ export default {
       title: "",
     };
   },
-  watch: {
-    $route(route) {
-      if (route.path != "/index") {
-        this.navseen = true;
-        this.title = this.titleList[route.path];
+  computed: {
+    navSeen() {
+      if (this.$route.path != "/index") {
+        this.title = this.titleList[this.$route.path];
+        return true;
       } else {
-        this.navseen = false;
+        return false;
       }
     },
   },
