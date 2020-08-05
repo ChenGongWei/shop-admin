@@ -60,7 +60,7 @@ export default {
               console.log(res);
               if (res.code == 200) {
                 sessionStorage.setItem("list", JSON.stringify(res.list));
-                sessionStorage.setItem("token", res.token);
+                sessionStorage.setItem("token", res.list.token);
                 this.$router.replace("/index");
               } else {
                 this.$message("请输入正确的用户名和密码");

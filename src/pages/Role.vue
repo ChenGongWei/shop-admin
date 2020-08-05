@@ -27,10 +27,23 @@
           <el-input v-model="form.rolename" autocomplete="off"></el-input>
         </el-form-item>
 
-        <el-form-item label="角色权限" :label-width="formLabelWidth">
-          <!-- <el-radio v-model="form.type" :disabled="disId == 1" :label="1">目录</el-radio>
-          <el-radio v-model="form.type" :disabled="disId == 2" :label="2">菜单</el-radio>-->
+        <!-- <el-form-item label="角色权限" :label-width="formLabelWidth">
+       
           <el-input v-model="form.menus" autocomplete="off"></el-input>
+        </el-form-item>-->
+
+        <el-form-item label="角色权限" :label-width="formLabelWidth">
+          <el-checkbox-group v-for="item in menuList" v-model="form.menus" :key="item.id">
+            <el-checkbox :label="item.id" @change="handleFirstChange(item.id)">{{item.title}}</el-checkbox>
+            <br />
+            <el-checkbox
+              v-for="child in item.children"
+              :label="child.id"
+              :key="child.id"
+              v-show="form.menus.includes(item.id)"
+              @change="con"
+            >{{child.title}}</el-checkbox>
+          </el-checkbox-group>
         </el-form-item>
 
         <el-form-item label="状态" :label-width="formLabelWidth">
@@ -49,6 +62,7 @@
 export default {
   data() {
     return {
+      menuList: [],
       tableData: [
         // {
         //   id: 1,
@@ -65,7 +79,7 @@ export default {
       tip: "添加", // 对话框类型
       form: {
         rolename: "", //角色名称
-        menus: "", //角色权限
+        menus: [], //角色权限
         status: true, //状态1正常2禁用
       },
       rules: {
@@ -78,35 +92,128 @@ export default {
     };
   },
   methods: {
+    // 点击一级菜单时触发
+    handleFirstChange(id) {
+      // 取消该一级菜单选中状态 则该一级菜单下所有子菜单全部取消选中
+      if (!this.form.menus.includes(id)) {
+        let list = this.menuList.filter((item) => item.id == id)[0].children;
+
+        list.forEach((item) => {
+          if (this.form.menus.indexOf(item.id) != -1) {
+            this.form.menus.splice(this.form.menus.indexOf(item.id), 1);
+          }
+        });
+      }
+
+      console.log(this.form.menus);
+    },
+    con() {
+      console.log(this.form.menus);
+    },
+    // 获取菜单列表
+    getMenus() {
+      this.http.get("/api/menulist?istree=1").then((res) => {
+        this.menuList = res.list || [];
+        // this.menus.forEach((item) => this.checkedCities.push([]));
+        // console.log(this.checkedCities);
+      });
+    },
+    // 添加角色
     handleAdd() {
-      this.dialogFormVisible = true;
+      this.tip = "添加";
       this.form = {
         rolename: "",
-        menus: "",
+        menus: [],
         status: true,
       };
+      this.dialogFormVisible = true;
     },
+    // 编辑角色
     handleEdit(index, id) {
       this.http.get("/api/roleinfo", { id }).then((res) => {
         if (res.code == 200) {
+          this.tip = "编辑";
           this.form = res.list;
+          this.form.id = id;
           this.form.status = res.list.status == 1 ? true : false;
+          // 权限
+          this.form.menus = res.list.menus
+            .split(",")
+            .map((item) => Number(item));
           this.dialogFormVisible = true;
+          console.log(res);
         }
       });
-      console.log(index, id);
     },
+    // 提交表单
     handleSubmit() {
+      let url = "";
+      if (this.tip == "添加") {
+        url = "/api/roleadd";
+      } else if (this.tip == "编辑") {
+        url = "/api/roleedit";
+      }
+      this.form.status = this.form.status ? 1 : 2;
       console.log(this.form);
+      this.http.post(url, this.form).then((res) => {
+        // console.log(res);
+        if (res.code == 200) {
+          this.$message({
+            message: res.msg,
+            type: "success",
+          });
+          // 重新获取角色列表
+          this.http.get("/api/rolelist").then((res) => {
+            this.tableData = res.list || [];
+          });
+          this.dialogFormVisible = false;
+        } else {
+          this.$message({
+            message: res.msg,
+            type: "error",
+          });
+        }
+      });
     },
+    // 删除角色
     handleDelete(index, id) {
-      console.log(index, id);
+      this.$confirm("此操作将永久删除该角色, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          this.http.post("/api/roledelete", { id }).then((res) => {
+            if (res.code == 200) {
+              this.$message({
+                message: res.msg,
+                type: "success",
+              });
+              // 重新获取角色列表
+              this.http.get("/api/rolelist").then((res) => {
+                this.tableData = res.list || [];
+              });
+            } else {
+              this.$message({
+                message: res.msg,
+                type: "error",
+              });
+            }
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除",
+          });
+        });
     },
   },
   mounted() {
     this.http.get("/api/rolelist").then((res) => {
       if (res.code == 200) {
-        this.tableData = res.list;
+        this.tableData = res.list || [];
+        this.getMenus();
       } else {
         this.$message("访问权限受限，请登录");
       }

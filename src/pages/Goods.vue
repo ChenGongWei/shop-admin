@@ -5,21 +5,23 @@
     <el-button type="primary">添加</el-button>
     <!-- 表格 -->
     <el-table :data="tableData" border style="width: 1000px" row-key="id">
-      <el-table-column prop="first" label="一级分类" width="150"></el-table-column>
+      <el-table-column prop="firstcatename" label="一级分类" width="150"></el-table-column>
 
-      <el-table-column prop="second" label="二级分类"></el-table-column>
+      <el-table-column prop="secondcatename" label="二级分类"></el-table-column>
 
-      <el-table-column prop="first" label="商品名称"></el-table-column>
+      <el-table-column prop="goodsname" label="商品名称"></el-table-column>
 
-      <el-table-column prop="nowprice" label="销售价格"></el-table-column>
+      <el-table-column prop="price" label="销售价格"></el-table-column>
 
-      <el-table-column prop="preprice" label="市场价格"></el-table-column>
+      <el-table-column prop="market_price" label="市场价格"></el-table-column>
 
-      <el-table-column prop="types" label="状态">
+      <el-table-column prop="status" label="状态">
         <template slot-scope="scope">
-          <el-button :type="scope.row.types[0]">{{scope.row.types[1]}}</el-button>
+          <el-button v-if="scope.row.status == 1" type="success">启用</el-button>
+          <el-button v-else-if="scope.row.status == 2" type="danger">禁用</el-button>
         </template>
       </el-table-column>
+
       <el-table-column label="操作" width="180">
         <template slot-scope="scope">
           <el-button size="mini" @click="handleEdit(scope.$index, scope.row.id)">编辑</el-button>
@@ -27,10 +29,21 @@
         </template>
       </el-table-column>
     </el-table>
+    <!-- 分页 -->
+    <el-pagination
+      background
+      layout="prev, pager, next"
+      :total="total"
+      :page-size="pageSize"
+      :current-page.sync="curIndex"
+    ></el-pagination>
   </div>
 </template>
 
 <script>
+// 富文本编辑器
+import E from "wangeditor";
+
 export default {
   data() {
     return {
@@ -55,6 +68,13 @@ export default {
           types: ["success", "启用"],
         },
       ],
+      total: 0, // 总数
+      pageSize: 5, // 每页条数
+      curIndex: 1, // 当前页数
+      dialogFormVisible: false, // 弹框是否显示
+      tip: "添加", // 对话框类型
+      form: {},
+      formLabelWidth: "100px",
     };
   },
   methods: {
@@ -63,6 +83,45 @@ export default {
     },
     handleDelete(index, row) {
       console.log(index, row);
+    },
+  },
+  // 获取初始数据
+  mounted() {
+    this.http.get("/api/goodscount").then((res) => {
+      if (res.code == 200) {
+        // console.log(res);
+        this.total = res.list[0].total;
+        this.http
+          .get("/api/goodslist", {
+            size: this.pageSize,
+            page: this.curIndex,
+          })
+          .then((res) => {
+            if (res.code == 200) {
+              console.log(res);
+              this.tableData = res.list || [];
+            }
+          });
+      } else {
+        this.$message("访问权限受限，请登录");
+      }
+    });
+  },
+  watch: {
+    // 监听页码变化
+    curIndex(idx) {
+      var size = this.pageSize;
+      this.http
+        .get("/api/goodslist", {
+          size,
+          page: idx,
+        })
+        .then((res) => {
+          if (res.code == 200) {
+            this.tableData = res.list || [];
+          }
+        });
+      console.log(idx);
     },
   },
 };
